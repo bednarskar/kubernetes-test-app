@@ -1,0 +1,34 @@
+apiVersion: v1 # Kubernetes API version
+kind: Service # Kubernetes resource kind we are creating
+metadata: # Metadata of the resource kind we are creating
+  name: hello-kube-service
+spec:
+  selector:
+    app: hello-kube-app
+  ports:
+    - protocol: "TCP"
+      nodePort: 30163
+      port: 8182 # The port that the service is running on in the cluster
+      targetPort: 8081
+  type: NodePort # type of the service. LoadBalancer indicates that our service will be external.
+---
+apiVersion: apps/v1
+kind: Deployment # Kubernetes resource kind we are creating
+metadata:
+  name: hello-kube-app
+spec:
+  selector:
+    matchLabels:
+      app: hello-kube-app
+  replicas: 1 # Number of replicas that will be created for this deployment
+  template:
+    metadata:
+      labels:
+        app: hello-kube-app
+    spec:
+      containers:
+        - name: hello-kube-app
+          image: bednarskar/hello-kube # Image that will be used to containers in the cluster
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 8081 # The port that the container is running on in the cluster
